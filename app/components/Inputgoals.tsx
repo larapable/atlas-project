@@ -1,9 +1,23 @@
+'use client'
+
 import React from 'react';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import UserHeader from './UserHeader';
+import { getSession, useSession } from "next-auth/react";
+import { useEffect } from 'react';
+
+
+
 
 export default function Inputgoals() {
+
+  const {data: session,status, update } = useSession();
+  console.log("useSession Hook session object", session)
+ 
+  let user;
+  if(session?.user?.name) 
+    user = JSON.parse(session?.user?.name as string);
 
   const [isEditing, setIsEditing] = React.useState(true)
   const [officeVision, setOfficeVision] = React.useState('')
@@ -13,10 +27,40 @@ export default function Inputgoals() {
   const [strategicGoals3, setStrategicGoals3] = React.useState('')
   const [selectedDate, setSelectedDate] = React.useState<Date | null>(new Date());
   const [selectedEndDate, setSelectedEndDate] = React.useState<Date | null>(new Date());
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
 
+
+  const department_id= user?.department_id;
+    console.log("User Parsed: ", user);
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`../api/checkGoals/${department_id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      if (data.vision) { // Adjust this condition based on your response structure
+        setOfficeVision(data.vision);
+        setValueProposition(data.proposition);
+        setStrategicGoals(data.goals);
+        setStrategicGoals2(data.goals2);
+        setStrategicGoals3(data.goals3);
+        setSelectedDate(new Date(data.startDate));
+        setSelectedEndDate(new Date(data.endDate));
+        setIsEditing(false);
+      } else {
+        console.error('Error fetching input goals data:', response.statusText);
+      }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Handle error, show error message to the user, etc.
+      }
+    }
+    fetchData();
+  }, [department_id]);
+    
+
+    
   const handleSave = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault()
 
@@ -39,7 +83,8 @@ export default function Inputgoals() {
           strategicGoals2: strategicGoals2,
           strategicGoals3: strategicGoals3,
           selectedDate: selectedDate,
-          selectedEndDate: selectedEndDate
+          selectedEndDate: selectedEndDate,
+          department_id: department_id
         })
       })
       if (response.ok) {
@@ -53,6 +98,48 @@ export default function Inputgoals() {
       console.error('Error:', error)
     }
   }
+  const handleEdit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+ 
+    try {
+
+    const formattedStartDate = selectedDate?.toISOString().split('T')[0];
+    const formattedEndDate = selectedEndDate?.toISOString().split('T')[0];
+
+      const res = await fetch("../api/getGoals", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          officeVision: officeVision,
+          valueProposition: valueProposition,
+          strategicGoals: strategicGoals,
+          strategicGoals2: strategicGoals2,
+          strategicGoals3: strategicGoals3,
+          selectedDate: formattedStartDate,
+          selectedEndDate: formattedEndDate,
+          department_id: department_id
+        }),
+      });
+
+      if (res.ok) {
+        console.log("Edit successful");
+        setIsEditing(false);
+      } else {
+        console.log("User goals failed.");
+      }
+    } catch (error) {
+      console.log("Error during saving goals", error);
+    }
+  };
+
+  const toggleEditing = () => {
+    setIsEditing(prevIsEditing => !prevIsEditing);
+  };
+  
 
   return (
     <div className="bg-[#E9E9E9] flex flex-col items-center w-[90rem] box-sizing-border">
@@ -164,25 +251,26 @@ export default function Inputgoals() {
         </div>
       </div>
       <div className="m-[0_0_0_10.3rem] ml-[5rem] mb-20 flex flex-row w-[25.8rem] box-sizing-border">
-        {isEditing ? (
-          <button onClick={handleSave} className="rounded-[0.6rem] bg-[#FAD655] relative m-[0_2.9rem_0_0] flex flex-row justify-center p-[0.8rem_0.1rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FFFFFF]">
-            <span className="break-words font-normal text-[1.3rem] text-[#962203]">
-              Save
-            </span>
-          </button>
-        ) : (
-          <button onClick={handleEdit} className="rounded-[0.6rem] bg-[#FAD655] relative m-[0_2.9rem_0_0] flex flex-row justify-center p-[0.8rem_0.1rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FFFFFF]">
-            <span className="break-words font-normal text-[1.3rem] text-[#962203]">
-              Edit
-            </span>
-          </button>
-        )}
 
-        <button className="rounded-[0.6rem] border-[0.1rem_solid_#FAD655] bg-[#FFFFFF] relative flex flex-row justify-center p-[0.8rem_0.5rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FAD655]">
-          <span className="break-words font-normal text-[1.3rem] text-[#962203]">
-            Cancel
-          </span>
-        </button>
+      {isEditing ? (
+    <button onClick={handleSave} disabled={!officeVision || !valueProposition || !strategicGoals} className="rounded-[0.6rem] bg-[#FAD655] relative m-[0_2.9rem_0_0] flex flex-row justify-center p-[0.8rem_0.1rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FFFFFF]">
+      <span className="break-words font-normal text-[1.3rem] text-[#962203]">
+        Save
+      </span>
+    </button>
+  ) : (
+    <button onClick={handleEdit} className="rounded-[0.6rem] bg-[#FAD655] relative m-[0_2.9rem_0_0] flex flex-row justify-center p-[0.8rem_0.1rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FFFFFF]">
+      <span className="break-words font-normal text-[1.3rem] text-[#962203]">
+        Save Edit
+      </span>
+    </button>
+  )}
+  <button onClick={toggleEditing} className="rounded-[0.6rem] bg-[#FAD655] relative m-[0_2.9rem_0_0] flex flex-row justify-center p-[0.8rem_0.1rem_0.8rem_0] w-[11.4rem] box-sizing-border hover:bg-[#FFFFFF]">
+    <span className="break-words font-normal text-[1.3rem] text-[#962203]">
+      {isEditing ? "Cancel" : "Edit"}
+    </span>
+  </button>
+   
       </div>
       <div className="bg-[url('/BlueGreyIllustrationBusinessGoalsFacebookPost71.png')] bg-[50%_50%] bg-cover bg-no-repeat absolute left-[22.5rem] top-[31rem] w-[7rem] h-[5.3rem]">
       </div>

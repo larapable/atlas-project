@@ -1,12 +1,17 @@
 import { Button, Card } from "@mui/material";
 import { useState } from "react";
+import { getSession, useSession } from "next-auth/react";
 
 export default function UserEditProfile() {
-  const [department, setDepartment] = useState("Wildcat Innovation Lab");
+
+  const {data: session,status, update } = useSession();
+
+  let user;
+  if(session?.user?.name) 
+    user = JSON.parse(session?.user?.name as string);
+
   const [imageUrl, setImageUrl] = useState("");
-  const [headOfficer, setHeadOfficer] = useState(" ");
   const [departmentLandline, setDepartmentLandline] = useState("");
-  const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [university, setUniversity] = useState("");
   const [departmentDescription, setDepartmentDescription] = useState("");
@@ -21,14 +26,48 @@ export default function UserEditProfile() {
     "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
   );
 
-  const handleSave = () => {
-    setHeadOfficer(headOfficer);
-    setDepartmentLandline(departmentLandline);
-    setEmail(email);
-    setLocation(location);
-    setUniversity(university);
-    setDepartmentDescription(departmentDescription);
+  const department_id= user?.department_id;
+  console.log("Department: ",department_id);
+
+  const handleSave = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("../api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          departmentLandline: departmentLandline,
+          location: location,
+          university: university,
+          departmentDescription: departmentDescription,
+          departmentId: department_id
+        }),
+      });
+
+      if (res.ok) {
+        console.log("Edit successful");
+       
+      } else {
+        console.log("User profile failed.");
+      }
+    } catch (error) {
+      console.log("Error during saving user Profile", error);
+    }
   };
+
+  // const handleSave = () => {
+  //   setHeadOfficer(headOfficer);
+  //   setDepartmentLandline(departmentLandline);
+  //   setEmail(email);
+  //   setLocation(location);
+  //   setUniversity(university);
+  //   setDepartmentDescription(departmentDescription);
+  // };
   return (
     <div className="flex flex-row">
       <Card className="w-[25rem] h-auto flex flex-col items-center justify-center rounded-2xl">
@@ -56,7 +95,7 @@ export default function UserEditProfile() {
           )}
         </div>
         <span className="text-lg font-normal">Department</span>
-        <div className="text-4xl font-bold text-center">{department}</div>
+        <div className="text-4xl font-bold text-center"></div>
         <Card className="flex flex-col w-[21rem] h-80 mt-10 mb-10 bg-[#E9E9E9] rounded-2xl">
           <div className=" flex flex-row items-center justify-center w-fit mx-8 mt-3">
             <div className="flex items-center">
@@ -77,12 +116,7 @@ export default function UserEditProfile() {
               <span className="text-xs font-normal mt-2 mx-2">
                 Head Officer
               </span>
-              <input
-                type="text"
-                value={headOfficer}
-                className=" text-lg font-bold mx-2"
-                onChange={(e) => setHeadOfficer(e.target.value)}
-              />
+  
             </div>
           </div>
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
@@ -126,12 +160,6 @@ export default function UserEditProfile() {
             </div>
             <div className="flex flex-col ">
               <span className="text-xs font-normal mt-2 mx-2">Email</span>
-              <input
-                type="text"
-                value={email}
-                className=" text-lg font-bold mx-2"
-                onChange={(e) => setEmail(e.target.value)}
-              />
             </div>
           </div>
           <div className=" flex flex-row items-center justify-center w-fit mx-8">

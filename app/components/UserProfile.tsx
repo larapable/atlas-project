@@ -1,6 +1,7 @@
 import { Button, Card } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getSession, useSession } from "next-auth/react";
+import EditProfile from "../profile/edit/page";
 import Email from "next-auth/providers/email";
 import Link from "next/link"
 
@@ -18,50 +19,63 @@ export default function UserProfile() {
  
   const [department, setDepartment] = useState("");
   // const [headOfficer, setHeadOfficer] = useState("John Doe");
-  const [departmentLandline, setDepartmentLandline] = useState("+1234567890");
+  const [departmentLandline, setDepartmentLandline] = useState("");
   // const [email, setEmail] = useState("johndoe@gmail.com");
-  const [location, setLocation] = useState("NGE Building - 4th Floor");
-  const [university, setUniversity] = useState(
-    "Cebu Institute of Technology - University"
-  );
+  const [location, setLocation] = useState("");
+  const [university, setUniversity] = useState("");
   const [departmentDescription, setDepartmentDescription] = useState("---Description---");
-  const [officeVision, setOfficeVision] = useState(
-    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
-  );
-  const [valueProposition, setValueProposition] = useState(
-    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
-  );
-  const [strategicGoals, setStrategicGoals] = useState(
-    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
-  );
+  const [officeVision, setOfficeVision] = useState("---Set Office Vision---");
+  const [valueProposition, setValueProposition] = useState("---Set Value Proposition---");
+  const [strategicGoals, setStrategicGoals] = useState("---Set Strategic Goals---");
 
     const department_id= user?.department_id;
     console.log("User Parsed: ", user);
-
-    
-
-
     const headOfficer = user?.username;
     const email = user?.email;
 
     useEffect(() => {
-      const fetchDepartmentDetails = async () => {
+      const fetchUserProfileData = async () => {
         try {
-          const response = await fetch(`/api/department/${department_id}`);
-          if (response.ok) { // Check if the response is successful
-            const departmentData = await response.json(); // Extract JSON data from the response
-            setDepartment(departmentData); // Set the department state with the fetched data
+          const response = await fetch(`../api/profile/${department_id}`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Received data:", data); // Add this line to log the received data
+            setDepartment(data.department_name);
+            setDepartmentLandline(data.departmentLandline);
+            setLocation(data.location);
+            setUniversity(data.university);
+            setDepartmentDescription(data.description);
           } else {
-            console.error('Error fetching department details:', response.statusText);
+            console.error('Error fetching user profile data:', response.statusText);
           }
         } catch (error) {
-          console.error('Error fetching department details:', error);
+          console.error('Error fetching user profile data:', error);
         }
       };
-    
-      fetchDepartmentDetails();
+      fetchUserProfileData();
     }, [department_id]);
-    
+
+
+    useEffect(() => {
+      const fetchProfileGoals = async () => {
+        try {
+          const response = await fetch(`../api/checkGoals/${department_id}`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Received data:", data); // Add this line to log the received data
+            setOfficeVision(data.vision);
+            setValueProposition(data.proposition);
+            setStrategicGoals(data.goals)
+            
+          } else {
+            console.error('Error fetching user profile data:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile data:', error);
+        }
+      };
+      fetchProfileGoals();
+    }, [department_id]);
 
 
   return (
@@ -197,7 +211,7 @@ export default function UserProfile() {
             </div>
           </div>
         </div>
-        <Button href="/profile/[id]/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
+        <Button href="/profile/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
           Edit
         </Button>
       </Card>
@@ -208,7 +222,7 @@ export default function UserProfile() {
         <div className="text-2xl font-bold text-center self-start mx-10 mt-10 mb-5">
           About Department
         </div>
-        <Button href="/profile/[id]/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pt-2 pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mt-8 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
+        <Button href="/profile/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pt-2 pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mt-8 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
           Edit
         </Button>
         </div>

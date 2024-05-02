@@ -10,8 +10,8 @@ const User = {
             // Assuming you have a function to retrieve department_id by department name
             // Replace getDepartmentIdByName with your actual function
             await excuteQuery({
-                query: 'CALL register_user(?, ?, ?, ?)',
-                values: [username, email, hashedPassword, department]
+                query: 'CALL register_user(?, ?, ?,?)',
+                values: [username, email, hashedPassword,department]
             });
 
             return true; 
