@@ -1,16 +1,20 @@
 import { Button, Card, Modal } from "@mui/material";
 import { useState } from "react";
+import { getSession, useSession } from "next-auth/react";
 
 export default function UserEditProfile() {
-  const [department, setDepartment] = useState("Wildcat Innovation Lab");
+
+  const {data: session,status, update } = useSession();
+
+  let user;
+  if(session?.user?.name) 
+    user = JSON.parse(session?.user?.name as string);
+
   const [imageUrl, setImageUrl] = useState("");
-  const [headOfficer, setHeadOfficer] = useState(" ");
   const [departmentLandline, setDepartmentLandline] = useState("");
-  const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [university, setUniversity] = useState("");
   const [departmentDescription, setDepartmentDescription] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
 
@@ -24,15 +28,38 @@ export default function UserEditProfile() {
     "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
   );
 
-  const handleSave = () => {
-    setHeadOfficer(headOfficer);
-    setDepartmentLandline(departmentLandline);
-    setEmail(email);
-    setLocation(location);
-    setUniversity(university);
-    setDepartmentDescription(departmentDescription);
-    setShowModal(false);
-    setConfirmationMessage("Edited successfully");
+  const department_id= user?.department_id;
+  console.log("Department: ",department_id);
+
+  const handleSave = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("../api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          departmentLandline: departmentLandline,
+          location: location,
+          university: university,
+          departmentDescription: departmentDescription,
+          departmentId: department_id
+        }),
+      });
+
+      if (res.ok) {
+        console.log("Edit successful");
+       
+      } else {
+        console.log("User profile failed.");
+      }
+    } catch (error) {
+      console.log("Error during saving user Profile", error);
+    }
   };
 
   const handleConfirmSave = () => {
@@ -42,10 +69,18 @@ export default function UserEditProfile() {
     setShowModal(false);
   };
 
+  // const handleSave = () => {
+  //   setHeadOfficer(headOfficer);
+  //   setDepartmentLandline(departmentLandline);
+  //   setEmail(email);
+  //   setLocation(location);
+  //   setUniversity(university);
+  //   setDepartmentDescription(departmentDescription);
+  // };
   return (
     <div className="flex flex-row">
       <Card className="w-[25rem] h-[53rem] flex flex-col items-center justify-center rounded-xl">
-        <div className="border-[0.1rem] border-solid shadow-lg border-black border-opacity-60  w-48 h-48 my-4 py-4 flex items-center">
+      <div className="border-[0.1rem] border-solid shadow-lg border-black border-opacity-60  w-48 h-48 my-4 py-4 flex items-center">
           {/* Conditionally render the image or the profile icon */}
           {imageUrl ? (
             <img
@@ -68,12 +103,12 @@ export default function UserEditProfile() {
             </svg>
           )}
         </div>
-        <span className="text-md font-normal">Department</span>
-        <div className="text-2xl font-bold text-center">{department}</div>
+        <span className="text-lg font-normal">Department</span>
+        <div className="text-4xl font-bold text-center"></div>
         <div className="flex flex-col w-[21rem] h-80 mb-10 mr-10">
-        <div className=" flex flex-row items-center justify-center w-fit mx-8 mt-3">
+          <div className=" flex flex-row items-center justify-center w-fit mx-8">
             <div className="flex items-center">
-              <svg
+            <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
@@ -86,20 +121,16 @@ export default function UserEditProfile() {
                 />
               </svg>
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-normal mt-2 mx-2">
-               Username
-              </span>
+            <div className="flex flex-col ">
+              <span className="text-xs font-normal mt-2 mx-2">Username</span>
               <input
                 type="text"
-                // ilisi lng ni ari please para username
-                // value={headOfficer}
                 className=" text-md w-72 font-bold mx-2 border border-gray-300 rounded px-3 py-2 bg-gray-300"
-                // onChange={(e) => setHeadOfficer(e.target.value)}
                 readOnly
               />
             </div>
           </div>
+          
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
             <div className="flex items-center">
               <svg
@@ -113,16 +144,15 @@ export default function UserEditProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-sm font-normal mt-2 mx-2">Email</span>
+              <span className="text-xs font-normal mt-2 mx-2">Email</span>
               <input
                 type="text"
-                value={email}
                 className=" text-md w-72 font-bold mx-2 border border-gray-300 rounded px-3 py-2 bg-gray-300"
-                // onChange={(e) => setEmail(e.target.value)}
                 readOnly
               />
             </div>
           </div>
+
           <div className=" flex flex-row items-center justify-center w-fit mx-8 mt-3">
             <div className="flex items-center">
               <svg
@@ -139,17 +169,15 @@ export default function UserEditProfile() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-normal mt-2 mx-2">
-                Head Officer
-              </span>
+              <span className="text-xs font-normal mt-2 mx-2">Head Officer</span>
               <input
                 type="text"
-                value={headOfficer}
-                className=" text-md w-72 font-bold mx-2 border border-gray-300 rounded px-3 py-2"
-                onChange={(e) => setHeadOfficer(e.target.value)}
+                className=" text-md w-72 font-bold mx-2 border border-gray-300 rounded px-3 py-2 bg-gray-300"
+                readOnly
               />
             </div>
           </div>
+
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
             <div className="flex items-center">
               <svg
@@ -166,7 +194,7 @@ export default function UserEditProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-sm font-normal mt-2 mx-2">
+              <span className="text-xs font-normal mt-2 mx-2">
                 Department Landline
               </span>
               <input
@@ -177,6 +205,7 @@ export default function UserEditProfile() {
               />
             </div>
           </div>
+
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
             <div className="flex items-center">
               <svg
@@ -193,7 +222,7 @@ export default function UserEditProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-sm font-normal mt-2 mx-2">Location</span>
+              <span className="text-xs font-normal mt-2 mx-2">Location</span>
               <input
                 type="text"
                 value={location}
@@ -202,6 +231,7 @@ export default function UserEditProfile() {
               />
             </div>
           </div>
+
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
             <div className="flex items-center">
               <svg
@@ -218,7 +248,7 @@ export default function UserEditProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-sm font-normal mt-2 mx-2">University</span>
+              <span className="text-xs font-normal mt-2 mx-2">University</span>
               <input
                 type="text"
                 value={university}
@@ -265,16 +295,15 @@ export default function UserEditProfile() {
         </div>
       </Modal>
 
-
       <div className="flex flex-col gap-5">
       <Card className="w-[78rem] h-64 flex flex-col rounded-xl ml-10 mr-10">
       <div className="flex flex-row self-start gap-[45rem]">
-        <div className="text-2xl font-bold text-center self-start mx-10 mt-10 mb-5">
+      <div className="text-2xl font-bold text-center self-start mx-10 mt-10 mb-5">
           About Department
         </div>
-        </div>
-        <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
-        </div>
+      </div>
+      <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
+      </div>
         <textarea
           value={departmentDescription}
           className=" font-normal text-lg w-[75rem] ml-6 mx-12 h-32 p-5 border border-gray-300 rounded px-3 py-2 mt-5 overflow-auto"
@@ -286,59 +315,59 @@ export default function UserEditProfile() {
           <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
           </div>
           <div className="mx-10 overflow-auto">
-            <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
+            <div className="text-lg font-normal mx-5 mb-2">
               <div className="whitespace-normal break-words pt-3 font-medium">
                 {officeVision}
               </div>
             </div>
           </div>
-        </Card>
-        <Card className="w-[78rem] h-40 flex flex-col rounded-xl ml-10 mr-10 pb-3">
+      </Card>
+      <Card className="w-[78rem] h-40 flex flex-col rounded-xl ml-10 mr-10 pb-3">
           <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">
             Value Proposition
           </span>
           <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
           </div>
           <div className="mx-10 overflow-auto">
-            <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
+            <div className="text-lg font-normal mx-5 mb-2">
               <div className="whitespace-normal break-words pt-3 font-medium">
-                {/* ilisi lang niya ni */}
                 {valueProposition}
               </div>
             </div>
           </div>
-        </Card>
-        <Card className="w-[78rem] h-[13rem] flex flex-col rounded-xl ml-10 mr-10 pb-3">
-          <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">Strategic Goals</span>
-          <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
-          </div>
-          <div className="mx-10 overflow-auto">
+      </Card>
+      <Card className="w-[78rem] h-[13rem] flex flex-col rounded-xl ml-10 mr-10 pb-3">
+      <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">Strategic Goals</span>
+        <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
+        </div>
+        <div className="mx-10 overflow-auto">
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
               <div className="whitespace-normal break-words pt-3 font-medium">
-              <span className="rounded-full bg-yellow-400 text-white font-bold px-2 py-1 mr-2">1</span>
+                <span className="rounded-full bg-yellow-400 text-white font-bold px-2 py-1 mr-2">1</span>
                 {/* ilisi lang niya ni */}
                 {strategicGoals}
               </div>
             </div>
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
               <div className="whitespace-normal break-words pt-3 font-medium">
-              <span className="rounded-full bg-red-500 text-white font-bold px-2 py-1 mr-2">2</span>
-              {/* ilisi lang niya ni */}
+                <span className="rounded-full bg-red-500 text-white font-bold px-2 py-1 mr-2">2</span>
+                {/* ilisi lang niya ni */}
                 {strategicGoals}
               </div>
             </div>
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
               <div className="whitespace-normal break-words pt-3 font-medium">
-              <span className="rounded-full bg-orange-500 text-white font-bold px-2 py-1 mr-2">3</span>
+                <span className="rounded-full bg-orange-500 text-white font-bold px-2 py-1 mr-2">3</span>
                 {/* ilisi lang niya ni */}
                 {strategicGoals}
               </div>
             </div>
+
           </div>
-        </Card>
+      </Card>
         
       
-      </div>
+    </div>
     </div>
   );
 }
