@@ -7,10 +7,10 @@ const FeaturesPic = () => {
   // SLIDESHOW
   const [currentIndex, setCurrentIndex] = useState(0);
   const images = [
-    'f-scorecard.png', 
-    'f-stratmap.png',
-    'f-swot.png',
-    'f-report.png',
+      'f-scorecard.png', 
+      'f-stratmap.png',
+      'f-swot.png',
+      'f-report.png',
   ];
 
   const goToNextSlide = () => {
@@ -20,6 +20,11 @@ const FeaturesPic = () => {
   const goToPreviousSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
   };
+
+  useEffect(() => {
+    const interval = setInterval(goToNextSlide, 4000);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
 
   return (
     <div>
@@ -33,8 +38,6 @@ const FeaturesPic = () => {
             <img src={images[currentIndex]} alt={`Slide ${currentIndex + 1}`} />
           </div>
           </div>
-          <button className="prev-button" onClick={goToPreviousSlide}><FaChevronLeft /></button>
-          <button className="next-button"onClick={goToNextSlide}><FaChevronRight /></button>
       </div>
 
     </div>

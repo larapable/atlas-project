@@ -135,14 +135,14 @@ const Swot = () => {
     setShowOptions(!showOptions);
   };
   return (
-    <div className="flex flex-row w-full bg-[#f7f6f6]">
+    <div className="flex flex-row w-full h-screen bg-[#eeeeee]">
       <Navbar />
       <div className="flex-1">
-        <UserHeader />
-        <div className="flex-1 flex flex-col mt-8 ml-8 ">
+        {/* <UserHeader /> */}
+        <div className="flex-1 flex flex-col mt-8 ml-80 ">
           <div className="flex flex-col mb-16">
-            <div className="mb-5 inline-block self-start break-words font-bold text-[1.9rem] text-[#000000]">
-              SWOT Analysis
+            <div className="mb-5 inline-block self-start break-words font-bold text-[3rem] text-[#000000]">
+              SWOT ANALYSIS
             </div>
             <span className="break-words font font-normal text-[1.3rem] text-[#504C4C]">
               Assess your project&#39;s strengths, weaknesses, opportunities,

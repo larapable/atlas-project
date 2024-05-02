@@ -143,13 +143,11 @@ export default function Inputgoals() {
 
   return (
     <div className="bg-[#E9E9E9] flex flex-col items-center w-[90rem] box-sizing-border">
-      <div className="ml-[10rem] w-[105rem] mt-[-2rem]">
+      {/* <div className="ml-[10rem] w-[105rem] mt-[-2rem]">
         <UserHeader />
-      </div>
+      </div> */}
       <div className="ml-[-65rem] mt-[1rem] inline-block break-words font-bold text-[3rem] text-[#000000]">
         GOAL SETTING
-      </div>
-      <div className="bg-[#EFAF21] m-[0_50.7rem_0.8rem_0] w-[6.4rem] h-[0.2rem] ml-[-25rem] ">
       </div>
       <div className="m-[0_2.5rem_1.9rem_2.5rem] inline-block self-end break-words font-normal text-[1.1rem] text-[#807C7C]">
         Goal setting involves defining specific objectives, outlining actionable steps, and establishing a timeframe for achievement. It provides direction and motivation <br />
