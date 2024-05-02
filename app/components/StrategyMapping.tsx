@@ -89,7 +89,7 @@ const StrategyMapping = () => {
 
   return (
     <div>
-        <span className="break-words font-bold text-[1.8rem] text-[#000000]">
+        <span className="break-words font-bold text-[3rem] text-[#000000]">
             Strategy Mapping
         </span>
         <div className="mt-8 grid grid-cols-3">

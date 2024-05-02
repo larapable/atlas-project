@@ -1,7 +1,6 @@
 import { Button, Card } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getSession, useSession } from "next-auth/react";
-import EditProfile from "../profile/edit/page";
 import Email from "next-auth/providers/email";
 import Link from "next/link"
 
@@ -19,68 +18,55 @@ export default function UserProfile() {
  
   const [department, setDepartment] = useState("");
   // const [headOfficer, setHeadOfficer] = useState("John Doe");
-  const [departmentLandline, setDepartmentLandline] = useState("");
+  const [departmentLandline, setDepartmentLandline] = useState("+1234567890");
   // const [email, setEmail] = useState("johndoe@gmail.com");
-  const [location, setLocation] = useState("");
-  const [university, setUniversity] = useState("");
+  const [location, setLocation] = useState("NGE Building - 4th Floor");
+  const [university, setUniversity] = useState(
+    "Cebu Institute of Technology - University"
+  );
   const [departmentDescription, setDepartmentDescription] = useState("---Description---");
-  const [officeVision, setOfficeVision] = useState("---Set Office Vision---");
-  const [valueProposition, setValueProposition] = useState("---Set Value Proposition---");
-  const [strategicGoals, setStrategicGoals] = useState("---Set Strategic Goals---");
+  const [officeVision, setOfficeVision] = useState(
+    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
+  );
+  const [valueProposition, setValueProposition] = useState(
+    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
+  );
+  const [strategicGoals, setStrategicGoals] = useState(
+    "LOREM IPSUM LOREM IPSUN LOREM IPSUN LOREM IPSUN LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUM LOREM IPSUN LOREM IPSUN "
+  );
 
     const department_id= user?.department_id;
     console.log("User Parsed: ", user);
+
+    
+
+
     const headOfficer = user?.username;
     const email = user?.email;
 
     useEffect(() => {
-      const fetchUserProfileData = async () => {
+      const fetchDepartmentDetails = async () => {
         try {
-          const response = await fetch(`../api/profile/${department_id}`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Received data:", data); // Add this line to log the received data
-            setDepartment(data.department_name);
-            setDepartmentLandline(data.departmentLandline);
-            setLocation(data.location);
-            setUniversity(data.university);
-            setDepartmentDescription(data.description);
+          const response = await fetch(`/api/department/${department_id}`);
+          if (response.ok) { // Check if the response is successful
+            const departmentData = await response.json(); // Extract JSON data from the response
+            setDepartment(departmentData); // Set the department state with the fetched data
           } else {
-            console.error('Error fetching user profile data:', response.statusText);
+            console.error('Error fetching department details:', response.statusText);
           }
         } catch (error) {
-          console.error('Error fetching user profile data:', error);
+          console.error('Error fetching department details:', error);
         }
       };
-      fetchUserProfileData();
+    
+      fetchDepartmentDetails();
     }, [department_id]);
-
-
-    useEffect(() => {
-      const fetchProfileGoals = async () => {
-        try {
-          const response = await fetch(`../api/checkGoals/${department_id}`);
-          if (response.ok) {
-            const data = await response.json();
-            console.log("Received data:", data); // Add this line to log the received data
-            setOfficeVision(data.vision);
-            setValueProposition(data.proposition);
-            setStrategicGoals(data.goals)
-            
-          } else {
-            console.error('Error fetching user profile data:', response.statusText);
-          }
-        } catch (error) {
-          console.error('Error fetching user profile data:', error);
-        }
-      };
-      fetchProfileGoals();
-    }, [department_id]);
+    
 
 
   return (
     <div className="flex flex-row">
-      <Card className="w-[25rem] h-auto flex flex-col items-center justify-center rounded-2xl">
+      <Card className="w-[25rem] h-[53rem] flex flex-col items-center justify-center rounded-xl">
         <div className="border-[0.1rem] border-solid shadow-lg border-black border-opacity-60  w-48 h-48 my-4 py-4 flex items-center">
           {/* Conditionally render the image or the profile icon */}
           {imageUrl ? (
@@ -107,8 +93,9 @@ export default function UserProfile() {
         <span className="text-lg font-normal">Department</span>
         <div className="text-4xl font-bold text-center">{department}</div>
         <div className="flex flex-col w-[21rem] h-80 mt-10 mb-10 bg-[#ffffff] ">
-          <div className=" flex flex-row items-center justify-center w-fit mx-8 mt-3">
-            <div className="flex items-center">
+          {/* fields */}
+        <div className=" flex flex-row items-center justify-center w-fit mx-8 mt-3">
+            <div className="flex items-center mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24" 
@@ -123,14 +110,54 @@ export default function UserProfile() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-normal mt-2 mx-2">
+              <span className="text-sm font-normal mt-2 mx-2">
+                Username
+              </span>
+              {/* ilisi lng ni ari please */}
+              <span className=" text-lg font-bold mx-2">{headOfficer}</span>
+            </div>
+          </div>
+          <div className=" flex flex-row items-center justify-center w-fit mx-8">
+            <div className="flex items-center mr-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-8 h-8"
+              >
+                <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
+                <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
+              </svg>
+            </div>
+            <div className="flex flex-col ">
+              <span className="text-sm font-normal mt-2 mx-2">Email</span>
+              <span className=" text-lg font-bold mx-2">{email}</span>
+            </div>
+          </div>
+          <div className=" flex flex-row items-center justify-center w-fit mx-8">
+            <div className="flex items-center mr-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24" 
+                fill="currentColor"
+                className="w-8 h-8"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-normal mt-2 mx-2">
                 Head Officer
               </span>
               <span className=" text-lg font-bold mx-2">{headOfficer}</span>
             </div>
           </div>
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
-            <div className="flex items-center">
+            <div className="flex items-center mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -145,7 +172,7 @@ export default function UserProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-xs font-normal mt-2 mx-2">
+              <span className="text-sm font-normal mt-2 mx-2">
                 Department Landline
               </span>
               <span className=" text-lg font-bold mx-2">
@@ -154,24 +181,7 @@ export default function UserProfile() {
             </div>
           </div>
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
-            <div className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="w-8 h-8"
-              >
-                <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
-                <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
-              </svg>
-            </div>
-            <div className="flex flex-col ">
-              <span className="text-xs font-normal mt-2 mx-2">Email</span>
-              <span className=" text-lg font-bold mx-2">{email}</span>
-            </div>
-          </div>
-          <div className=" flex flex-row items-center justify-center w-fit mx-8">
-            <div className="flex items-center">
+            <div className="flex items-center mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -186,12 +196,12 @@ export default function UserProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-xs font-normal mt-2 mx-2">Location</span>
+              <span className="text-sm font-normal mt-2 mx-2">Location</span>
               <span className=" text-lg font-bold mx-2">{location}</span>
             </div>
           </div>
           <div className=" flex flex-row items-center justify-center w-fit mx-8">
-            <div className="flex items-center">
+            <div className="flex items-center mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -206,73 +216,78 @@ export default function UserProfile() {
               </svg>
             </div>
             <div className="flex flex-col ">
-              <span className="text-xs font-normal mt-2 mx-2">University</span>
+              <span className="text-sm font-normal mt-2 mx-2">University</span>
               <span className=" text-lg font-bold mx-2">{university}</span>
             </div>
           </div>
         </div>
-        <Button href="/profile/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
+        <Button href="/profile/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mb-5 mt-16 hover:bg-[#8a252c] hover:text-[#ffffff]">
           Edit
         </Button>
       </Card>
       {/* ABOUT DEPARTMENT */}
-      <div className="flex flex-col gap-5">
-      <Card className="w-[64rem] h-auto flex flex-col rounded-2xl ml-10 mr-10">
-        <div className="flex flex-row self-start gap-[30rem]">
-        <div className="text-2xl font-bold text-center self-start mx-10 mt-10 mb-5">
+      <div className="flex flex-col gap-6">
+      <Card className="w-[78rem] h-64 flex flex-col rounded-xl ml-10 mr-10 pb-3">
+        <div className="flex flex-row self-start gap-[45rem]">
+        <div className="text-2xl font-bold text-center self-start mx-10 mt-10 mb-5 text-[#5c5b5b]">
           About Department
         </div>
-        <Button href="/profile/edit" className="shadow-[0rem_0.3rem_0.3rem_0rem_rgba(0,0,0,0.25)] rounded-[0.6rem] bg-[#FAD655] text-[#8A252C] break-words font-semibold text-lg relative flex pt-2 pr-3 pl-6 pb-2 w-40 h-[fit-content] mx-10 mt-8 mb-5 hover:bg-[#8a252c] hover:text-[#ffffff]">
-          Edit
-        </Button>
         </div>
         <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
         </div>
-        <div className=" text-xl mx-12 h-32 mt-5">{departmentDescription}</div>
+        <div className="text-xl mx-12 h-32 mt-5 font-semibold overflow-y-auto">{departmentDescription}</div>
       </Card>
-      <Card className="w-[64rem] h-auto flex flex-col rounded-2xl ml-10 mr-10">
-          <span className="text-2xl font-bold mx-10 mt-3 mb-3">Office Vision</span>
+      <Card className="w-[78rem] h-40 flex flex-col rounded-xl ml-10 mr-10 pb-3">
+          <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">Office Vision</span>
           <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
           </div>
-          <div className="mx-10">
+          <div className="mx-10 overflow-auto">
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
-              <div className="bg-[url('/ov.png')] bg-[50%_50%] bg-cover bg-no-repeat h-16 w-28 mt-2 mr-5 ml-[-2rem]">
-              </div>
-              <div className="whitespace-normal break-words pt-3">
+              <div className="whitespace-normal break-words pt-3 font-medium">
                 {officeVision}
               </div>
             </div>
           </div>
       </Card>
-      <Card className="w-[64rem] h-auto flex flex-col rounded-2xl ml-10 mr-10">
-          <span className="text-2xl font-bold mx-10 mt-3 mb-3">
+      <Card className="w-[78rem] h-40 flex flex-col rounded-xl ml-10 mr-10 pb-3">
+          <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">
             Value Proposition
           </span>
           <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
           </div>
-          <div className="mx-10">
+          <div className="mx-10 overflow-auto">
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
-              <div className="bg-[url('/vp.png')] bg-[50%_50%] bg-cover bg-no-repeat h-16 w-28 mt-2 mr-5 ml-[-2rem]">
-              </div>
-              <div className="whitespace-normal break-words pt-3">
+              <div className="whitespace-normal break-words pt-3 font-medium">
                 {valueProposition}
               </div>
             </div>
           </div>
       </Card>
-      <Card className="w-[64rem] h-auto flex flex-col rounded-2xl ml-10 mr-10">
-          <span className="text-2xl font-bold mx-10 mt-3 mb-3">Strategic Goals</span>
+      <Card className="w-[78rem] h-[13rem] flex flex-col rounded-xl ml-10 mr-10">
+          <span className="text-2xl font-bold mx-10 mt-3 mb-3 text-[#5c5b5b]">Strategic Goals</span>
           <div className="bg-[#CBC3C3] left-[0rem] top-[2.3rem] right-[0rem] h-[0.1rem]">
           </div>
-          <div className="mx-10">
+          <div className="mx-10 overflow-auto">
             <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
-              <div className="bg-[url('/sg.png')] bg-[50%_50%] bg-cover bg-no-repeat h-16 w-28 mt-2 mr-5 ml-[-2rem]">
+              <div className="whitespace-normal break-words pt-3 font-medium">
+              <span className="rounded-full bg-yellow-400 text-white font-bold px-2 py-1 mr-2">1</span>
+                {strategicGoals}
               </div>
-              <div className="whitespace-normal break-words pt-3">
+            </div>
+            <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
+              <div className="whitespace-normal break-words pt-3 font-medium">
+              <span className="rounded-full bg-red-500 text-white font-bold px-2 py-1 mr-2">2</span>
+                {strategicGoals}
+              </div>
+            </div>
+            <div className="text-lg font-normal mx-5 mb-2 flex flex-row">
+              <div className="whitespace-normal break-words pt-3 font-medium">
+              <span className="rounded-full bg-orange-500 text-white font-bold px-2 py-1 mr-2">3</span>
                 {strategicGoals}
               </div>
             </div>
           </div>
+          
       </Card>
       </div>
     </div>

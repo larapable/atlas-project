@@ -5,11 +5,10 @@ import UserEditProfile from "@/app/components/EditProfile";
 
 export default function EditProfile() {
   return (
-    <div className="flex flex-row w-full bg-[#E9E9E9]">
+    <div className="flex flex-row w-full h-screen bg-[#E9E9E9]">
       <Navbar/>
       <div className="flex-1">
-        <UserHeader />
-        <div className="flex-1 flex flex-col mt-8 ml-10">
+        <div className="flex-1 flex flex-col mt-8 ml-80">
           <UserEditProfile />
         </div>
       </div>
